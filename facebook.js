@@ -1,59 +1,64 @@
-// Initialize Facebook JS SDK
-window.fbAsyncInit = function () {
-    FB.init({
-        appId: '746459578850470',
-        xfbml: true,
-        version: 'v2.8'
-    });
-    FB.getLoginStatus(function (response) {
-        if (response.status === 'connected') {
-            document.getElementById('status').innerHTML = 'You are logged in.';
-            document.getElementById('login').style.visibility = 'hidden';
-        } else if (response.status === 'not_authorized') {
-            document.getElementById('status').innerHTML = 'You are not logged in.';
-        } else {
-            document.getElementById('status').innerHTML = 'You are not logged into Facebook.';
-        }
-    });
+window.fbAsyncInit = function() {
+	FB.init({
+		appId   : '746459578850470',
+		xfbml   : true,
+		version : 'v2.8',
+		status  : true,
+		cookie  : true,
+		oauth   : true
+	});
 };
-(function (d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) {
-        return;
-    }
-    js = d.createElement(s);
-    js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
+
+(function(d, s, id){
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) {return;}
+	js = d.createElement(s); js.id = id;
+	js.src = "//connect.facebook.net/ja_JP/sdk.js";
+	fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-// Login to Facebook with Extra Permissions
-function login() {
-    FB.login(function (response) {
-        if (response.status === 'connected') {
-            document.getElementById('status').innerHTML = 'You are logged in.';
-            document.getElementById('login').style.visibility = 'hidden';
-        } else if (response.status === 'not_authorized') {
-            document.getElementById('status').innerHTML = 'You are not logged in.';
-        } else {
-            document.getElementById('status').innerHTML = 'You are not logged into Facebook.';
-        }
-    }, {
-        scope: 'email'
-    });
-}
+function btnClick() {
+	FB.login(function (response) {
+		if (response.authResponse) {
+			var body = 'Reading JS SDK documentation';
+            
+            FB.api('/me', function(response) {
+				if (!response || response.error) {
+					var read_err_text = 'Error';
+					$("#name_result").text(read_err_text);
+				} else {
+					var read_ok_text = response.name;
+					$("#name_result").text(read_ok_text);
+				}
+			});
 
-// Get Basic User Info
-// TODO: Get user's friend count
-function getInfo() {
-    FB.api('/me/friends', 'GET', {
-        fields: 'total_count'
-    }, function (response) {
-        document.getElementById('status').innerHTML = response.id;
-    });
-}
+			FB.api('/me/friends', function(response) {
+				if (!response || response.error) {
+					var read_err_text = 'Error';
+					$("#read_result").text(read_err_text);
+				} else {
+					var read_ok_text = response.summary.total_count;
+					$("#read_result").text(read_ok_text);
+				}
+			});
+            
+            FB.api('/me/posts', function(response) {
+				if (!response || response.error) {
+					var read_err_text = 'Error';
+					$("#shares_result").text(read_err_text);
+				} else {
+					var read_ok_text = response.shares.count;
+					$("#shares_result").text(read_ok_text);
+				}
+			});
 
-//Log User Out
+		} else {
+			alert('User is logged out');
+		}
+	}, {scope: 'public_profile,user_friends'}); 
+};
+
+// Log User Out
 function logout() {
             FB.logout(function(response) {
             });
