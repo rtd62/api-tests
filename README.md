@@ -1,4 +1,4 @@
-## api-tests
+## Facebook & Braintree API Testing
 
 This is a small site that I created in order to test Facebook's Graph API and Braintree's SDK.
 
